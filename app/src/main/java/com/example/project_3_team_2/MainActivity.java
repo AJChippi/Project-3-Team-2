@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void loginHandler() {
         View view = getLayoutInflater().inflate(R.layout.login_layout, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                MainActivity.this, R.style.login_layout);
         builder.setView(view).show();
 
         Button btnLogin = view.findViewById(R.id.btnUserLogin);
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     if(response.code() == 200){
                         LoginResult result = response.body();
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+
                         builder1.setTitle(result.getName());
                         builder1.setMessage(result.getEmail());
 
@@ -81,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<LoginResult> call, Throwable t) {
-                    Toast.makeText(MainActivity.this, t.getMessage(),Toast.LENGTH_SHORT).show();                }
+                    Toast.makeText(MainActivity.this, t.getMessage(),Toast.LENGTH_SHORT).show();
+                }
             });
 
         });
@@ -90,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void signupHandler() {
         View view2 = getLayoutInflater().inflate(R.layout.signup_layout, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                MainActivity.this, R.style.signup_layout);
         builder.setView(view2).show();
 
         Button btnSignup = view2.findViewById(R.id.btnNewSignUp);
