@@ -3,6 +3,7 @@ package com.example.project_3_team_2;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -22,6 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     Button btnSignUp;
+    Button btnInfo;
     private RetrofitInterface retrofitInterface;
     private Retrofit retrofit;
     private String BASE_URL = "http://192.168.1.174:3000";
@@ -32,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
+
+        btnInfo = findViewById(R.id.btnInfo);
+
+        btnInfo.setOnClickListener(View -> {
+            Intent intent = new Intent(this, TutorInformation.class);
+            startActivity(intent);
+        });
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();

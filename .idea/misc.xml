@@ -3,13 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/drawable/transparent_bg_bordered.xml" value="0.3625" />
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/drawable/transparent_bg_bordered_button.xml" value="0.3625" />
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/layout/activity_fullscreen.xml" value="0.29010416666666666" />
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/layout/login.xml" value="0.21481481481481482" />
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/layout/login_layout.xml" value="0.3625" />
-        <entry key="..\:/Users/rakib/Project-3-Team-2/app/src/main/res/layout/signup_layout.xml" value="0.21481481481481482" />
+        <entry key="..\:/Users/rubby/AndroidStudioProjects/Project3Team2/app/src/main/res/layout/activity_main.xml" value="0.27395833333333336" />
+        <entry key="..\:/Users/rubby/AndroidStudioProjects/Project3Team2/app/src/main/res/layout/activity_tutor_edit_information.xml" value="0.27395833333333336" />
+        <entry key="..\:/Users/rubby/AndroidStudioProjects/Project3Team2/app/src/main/res/layout/activity_tutor_information.xml" value="0.33" />
       </map>
     </option>
   </component>
