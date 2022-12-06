@@ -14,4 +14,7 @@
     <style name="signup_layout" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/rounded_login_ui</item>
     </style>
+    <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:textColor">@color/yellow</item>
+    </style>
 </resources>

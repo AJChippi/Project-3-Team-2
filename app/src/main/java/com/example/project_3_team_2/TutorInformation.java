@@ -44,7 +44,7 @@ public class TutorInformation extends AppCompatActivity {
             startActivity(intent);
         });
 
-        String URL = "https://tutorproject.onrender.com/api/books";
+        String URL = "https://tutorapp-qi3p.onrender.com/tutor?username=";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, URL, null, response ->  {
                 try {
                     JSONObject jsonArray = response.getJSONObject("books");
