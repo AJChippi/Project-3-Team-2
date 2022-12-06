@@ -44,11 +44,11 @@ public class TutorInformation extends AppCompatActivity {
             startActivity(intent);
         });
 
-        String URL = "https://tutorapp-qi3p.onrender.com/tutor?username=";
+        String URL = "https://tutorapp-qi3p.onrender.com/tutorUser?username=BillNye";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, URL, null, response ->  {
                 try {
-                    JSONObject jsonArray = response.getJSONObject("books");
-                    txtName.setText(jsonArray.getString("name"));
+                    String jsonArray = response.getJSONObject("results").getString("username");
+                    txtName.setText(jsonArray+"");
                     } catch (JSONException jsonException) {
                     jsonException.printStackTrace();
                 }
