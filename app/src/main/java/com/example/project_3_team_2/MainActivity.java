@@ -4,48 +4,52 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.RadioGroup;
 
-import java.util.HashMap;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     Button btnSignUp;
     Button btnInfo;
-    private RetrofitInterface retrofitInterface;
-    private Retrofit retrofit;
-    private String BASE_URL = "http://192.168.1.174:3000";
+    RequestQueue queue;
+    RadioGroup groupUserType;
+
+    private String username;
+    private String password;
+    private String userID;
+    private String UserType = "Student";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        groupUserType = findViewById(R.id.groupUserType);
+
+
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
 
         btnInfo = findViewById(R.id.btnInfo);
-
         btnInfo.setOnClickListener(View -> {
             Intent intent = new Intent(this, GoogleMaps.class);
             startActivity(intent);
         });
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
-        retrofitInterface = retrofit.create(RetrofitInterface.class);
         btnLogin.setOnClickListener(view -> {
             loginHandler();
         });
@@ -65,75 +69,124 @@ public class MainActivity extends AppCompatActivity {
         Button btnLogin = view.findViewById(R.id.btnUserLogin);
         EditText editEmail = view.findViewById(R.id.etEntEmail);
         EditText editPassword = view.findViewById(R.id.etEntPassword);
+        username = String.valueOf(editEmail.getText());
+        password = String.valueOf(editPassword.getText());
+
+
 
         btnLogin.setOnClickListener(view1 -> {
-            HashMap<String, String> map = new HashMap<>();
-
-            map.put("email", editEmail.getText().toString());
-            map.put("password", editPassword.getText().toString());
-
-            Call<LoginResult> call = retrofitInterface.executeLogin(map);
-            call.enqueue(new Callback<LoginResult>() {
-                @Override
-                public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
-                    if(response.code() == 200){
-                        LoginResult result = response.body();
-                        AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-
-                        builder1.setTitle(result.getName());
-                        builder1.setMessage(result.getEmail());
-
-                        builder1.show();
-
-                    } else if(response.code() == 404){
-                        Toast.makeText(MainActivity.this, "Wrong Credentials",Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<LoginResult> call, Throwable t) {
-                    Toast.makeText(MainActivity.this, t.getMessage(),Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            postLoginUser();
+            verifyLogin();
         });
 
+
     }
+
+
+    private void postLoginUser() {
+        String url = "https://tutorapp-qi3p.onrender.com/loginUser";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,null,
+                response->{
+                    Log.d("API_POST", "Getting data");
+                    JSONObject jsonBody = new JSONObject();
+                    try {
+                        jsonBody.put("username", username);
+                        jsonBody.put("password", password);
+//                            JSONObject jsonObject = response.getJSONObject("results");
+//                            userID = jsonObject.toString();
+//                            Log.d("API_POST", jsonObject.toString());
+
+                    } catch (JSONException e) {
+                        Log.e("MainActivity", "Error creating JSON object: " + e);
+                    }
+
+                    Log.d("API_POST", "Finished getting data");
+                },error->{
+            Log.d("API_POST", error.toString());
+        });
+
+
+    }
+
+
+    private void verifyLogin() {
+        // First, get a reference to the SharedPreferences object
+        SharedPreferences sharedPref = getSharedPreferences("my_prefs", MainActivity.MODE_PRIVATE);
+
+        // Now, we need an editor object to make changes to the preferences
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        String url = "https://tutorapp-qi3p.onrender.com/tutorUser";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,
+                response->{
+                    try {
+                        JSONObject jsonPerson = response.getJSONObject("results");
+                        if(response.getJSONObject("results").getString("status").equals("200")) {
+                            Intent intent = new Intent(this, TutorEditInformation.class);
+                            startActivity(intent);
+                        }
+                        userID = jsonPerson.getString("userID");
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                },error->{
+        });
+
+        // Save the userID in shared preference
+        editor.putString("userID", userID);
+        // Apply the changes to the preferences
+        editor.apply();
+
+        queue.add(request);
+    }
+
+
 
     private void signupHandler() {
         View view2 = getLayoutInflater().inflate(R.layout.signup_layout, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 MainActivity.this, R.style.signup_layout);
-        builder.setView(view2).show();
 
         Button btnSignup = view2.findViewById(R.id.btnNewSignUp);
-        EditText editName = view2.findViewById(R.id.etEntName);
         EditText editEmail = view2.findViewById(R.id.etEntNewEmail);
         EditText editPassword = view2.findViewById(R.id.etEntNewPassword);
 
+        builder.setView(view2).show();
+
+
         btnSignup.setOnClickListener(view1 -> {
-            HashMap<String, String> map = new HashMap<>();
-
-            map.put("name", editName.getText().toString());
-            map.put("email",editEmail.getText().toString());
-            map.put("password",editPassword.getText().toString());
-
-            Call<Void> call = retrofitInterface.executeSignUp(map);
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if(response.code() == 200){
-                        Toast.makeText(MainActivity.this, "Signed Up Successfully",Toast.LENGTH_SHORT).show();
-                    } else if(response.code() == 400){
-                        Toast.makeText(MainActivity.this, "Already Registered",Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(MainActivity.this, t.getMessage(),Toast.LENGTH_SHORT).show();
-                }
+            String url = "https://tutorapp-qi3p.onrender.com/registerUser";
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,null,
+                    response->{
+                        Log.d("API_GET", "Getting data");
+                        JSONObject jsonBody = new JSONObject();
+                        try {
+                            jsonBody.put("username", editEmail);
+                            jsonBody.put("password", editPassword);
+                            jsonBody.put("userType", UserType);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.d("API_GET", e.getMessage());
+                        }
+                        //Log.d("API_GET", "Finished getting data");
+                    },error->{
+                Log.d("API_GET", error.toString());
             });
+            queue.add(request);
         });
+    }
+
+    public void checkUserType(View v){
+        CheckBox chkSelected = (CheckBox) v;
+        if(chkSelected.isChecked()) {
+            UserType = "TUTOR";
+            chkSelected.isChecked();
+        }
+        else {
+            UserType = "Student";
+        }
+        Log.d("Sfasf", UserType);
     }
 }
