@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     Button btnSignUp;
     Button btnInfo;
+    Button btnListView;
     private RetrofitInterface retrofitInterface;
     private Retrofit retrofit;
     private String BASE_URL = "http://192.168.1.174:3000";
@@ -39,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
 
         btnInfo.setOnClickListener(View -> {
             Intent intent = new Intent(this, TutorInformation.class);
+            startActivity(intent);
+        });
+
+        btnListView = findViewById(R.id.btnListView);
+        btnListView.setOnClickListener(v->{
+            Intent intent = new Intent(this, ListViewActivity.class);
             startActivity(intent);
         });
 
