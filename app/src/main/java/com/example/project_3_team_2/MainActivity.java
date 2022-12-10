@@ -16,7 +16,9 @@ import android.widget.RadioGroup;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,13 +40,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         groupUserType = findViewById(R.id.groupUserType);
-
+        queue = Volley.newRequestQueue(this);
 
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
 
-        btnInfo = findViewById(R.id.btnInfo);
         btnInfo.setOnClickListener(View -> {
             Intent intent = new Intent(this, TutorEditInformation.class);
             startActivity(intent);
@@ -84,28 +85,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void postLoginUser() {
-        String url = "https://tutorapp-qi3p.onrender.com/loginUser";
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,null,
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+            jsonBody.put("password", password);
+
+        } catch (JSONException e) {
+            Log.e("MainActivity", "Error creating JSON object: " + e);
+        }
+        String url = "https://findtutors.onrender.com/loginUser";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,jsonBody,
                 response->{
-                    Log.d("API_POST", "Getting data");
-                    JSONObject jsonBody = new JSONObject();
-                    try {
-                        jsonBody.put("username", username);
-                        jsonBody.put("password", password);
-//                            JSONObject jsonObject = response.getJSONObject("results");
-//                            userID = jsonObject.toString();
-//                            Log.d("API_POST", jsonObject.toString());
-
-                    } catch (JSONException e) {
-                        Log.e("MainActivity", "Error creating JSON object: " + e);
-                    }
-
-                    Log.d("API_POST", "Finished getting data");
+                    Log.d("API_POST", "onResponse: " + response);
                 },error->{
-            Log.d("API_POST", error.toString());
+            Log.d("API_POST", "onErrorResponse: " + error);
         });
-
-
+        queue.add(request);
     }
 
 
@@ -116,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         // Now, we need an editor object to make changes to the preferences
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        String url = "https://tutorapp-qi3p.onrender.com/tutorUser";
+        String url = "https://findtutors.onrender.com/tutorUser";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,
                 response->{
                     try {
@@ -138,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("userID", userID);
         // Apply the changes to the preferences
         editor.apply();
-
         queue.add(request);
     }
 
@@ -157,20 +151,41 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnSignup.setOnClickListener(view1 -> {
-            String url = "https://tutorapp-qi3p.onrender.com/registerUser";
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,null,
+            String url = "https://findtutors.onrender.com/registerUser";
+            JSONObject jsonBody = new JSONObject();
+            try {
+                jsonBody.put("username", editEmail.getText());
+                jsonBody.put("password", editPassword.getText());
+                jsonBody.put("userType", UserType);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("API_GET", e.getMessage());
+            }
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,jsonBody,
                     response->{
-                        Log.d("API_GET", "Getting data");
-                        JSONObject jsonBody = new JSONObject();
+                        Log.d("signUp", "onResponse: " + response);
+                        //share the userID
+                        SharedPreferences sharedPref = getSharedPreferences("my_prefs", MainActivity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
                         try {
-                            jsonBody.put("username", editEmail);
-                            jsonBody.put("password", editPassword);
-                            jsonBody.put("userType", UserType);
-                        } catch (Exception e) {
+                            JSONArray jsonArray = response.getJSONArray("results");
+                            Log.d("signUp", "jsonarray: " + jsonArray);
+                            JSONObject jsonObject = jsonArray.getJSONObject(0);
+                            Log.d("signUp", "jsonobject: " + jsonObject.getString("userID"));
+                            String user = jsonObject.getString("userID");
+                            editor.putString("userID", user);
+                            editor.apply();
+                        } catch (JSONException e) {
+                            Log.d("signUp", "error: " + e.getMessage());
                             e.printStackTrace();
-                            Log.d("API_GET", e.getMessage());
                         }
-                        //Log.d("API_GET", "Finished getting data");
+                        Intent intent;
+                        if(UserType.equals("Student")) {
+                            intent = new Intent(this, GoogleMaps.class);
+                        } else {
+                            intent = new Intent(this, TutorEditInformation.class);
+                        }
+                        startActivity(intent);
                     },error->{
                 Log.d("API_GET", error.toString());
             });
@@ -185,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             chkSelected.isChecked();
         }
         else {
-            UserType = "Student";
+            UserType = "STUDENT";
         }
         Log.d("Sfasf", UserType);
     }

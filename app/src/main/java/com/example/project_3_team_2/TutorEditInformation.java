@@ -6,6 +6,8 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -49,7 +51,6 @@ public class TutorEditInformation extends AppCompatActivity {
     Spinner locationSpinner, subjectSpinner;
     Button btnSave;
     String location;
-    Sensor gps;
     SensorManager sensorManager;
     String TAG = "TutorEditInformation";
     public static final int REQUEST_LOCATION_PERMISSION = 1;
@@ -100,7 +101,9 @@ public class TutorEditInformation extends AppCompatActivity {
             }
         });
 
-        //btnsave
+        // get the shared preferences
+        SharedPreferences sharedPreferences = getSharedPreferences("my_prefs", MODE_PRIVATE);
+
         btnSave.setOnClickListener(view -> {
             Toast.makeText(this, "Saved Information", Toast.LENGTH_SHORT).show();
             //push to database
@@ -113,11 +116,13 @@ public class TutorEditInformation extends AppCompatActivity {
             String bio = editBio.getText().toString();
             String subject = subjectSpinner.getSelectedItem().toString();
 
-            String url = "https://findtutors.onrender.com/updateUser";
+            String url = "https://findtutors.onrender.com/updateUser?userID="+sharedPreferences.getString("userID", "");
 
+            //log the shared preferences
+            Log.d("shared", "onCreate: " + sharedPreferences.getString("userID", ""));
             JSONObject obj = new JSONObject();
             try {
-                obj.put("userID", "1");
+                obj.put("userID", sharedPreferences.getString("userID", ""));
                 obj.put("name", name);
                 obj.put("phoneNumber", phoneNumber);
                 obj.put("email", email);
@@ -142,6 +147,8 @@ public class TutorEditInformation extends AppCompatActivity {
                 }
             });
             MyRequestQueue.add(jsonObjectRequest);
+            Intent intent = new Intent(this, GoogleMaps.class);
+            startActivity(intent);
         });
     }
 
