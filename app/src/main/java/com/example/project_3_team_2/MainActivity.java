@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
     Button btnSignUp;
     Button btnInfo;
     Button btnListView;
-    private RetrofitInterface retrofitInterface;
-    private Retrofit retrofit;
     private String BASE_URL = "http://192.168.1.174:3000";
     RequestQueue queue;
     RadioGroup groupUserType;
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        groupUserType = findViewById(R.id.groupUserType);
 
 
 
@@ -60,10 +57,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
-        retrofitInterface = retrofit.create(RetrofitInterface.class);
         btnLogin.setOnClickListener(view -> {
             loginHandler();
         });
