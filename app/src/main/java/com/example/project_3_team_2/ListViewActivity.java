@@ -31,6 +31,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ListViewActivity extends AppCompatActivity {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
@@ -43,7 +46,7 @@ public class ListViewActivity extends AppCompatActivity {
     String curUserID;
     FusedLocationProviderClient flpClient;
     final String TAG = "TutorHub";
-    Location deviceLocation;
+    double deviceLat, deviceLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +93,15 @@ public class ListViewActivity extends AppCompatActivity {
                                 longitude =0;
                             }
 
-                            Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude);
+                            // Get distance to tutor
+                            float[] result = new float[1];
+                            Location.distanceBetween(deviceLat,deviceLng,latitude,longitude,result);
+                            float distance = result[0];
+
+                            Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude,distance);
                             tutors.add(nextTutor);
                         }
+                        tutors.sort(Comparator.reverseOrder());
                         adapter.notifyDataSetChanged();
                     }catch(JSONException e){
                         Log.d(TAG,"error (post response): " + e.getMessage());
@@ -103,11 +112,14 @@ public class ListViewActivity extends AppCompatActivity {
 
         queue.add(request);
 
-        tutors.add(new Tutor("1","Example Name1","Math",1,1));
-        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1));
-        tutors.add(new Tutor("3","Example Name3","English",1,1));
-        tutors.add(new Tutor("3","Example Name4","Math",1,1));
+        tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
+        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1,20));
+        tutors.add(new Tutor("3","Example Name3","English",1,1,40));
+        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));
 
+        // Sort the list
+//        Collections.sort(tutors);
+        tutors.sort(Comparator.reverseOrder());
         adapter.notifyDataSetChanged();
 
         spnListFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -115,6 +127,7 @@ public class ListViewActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 0){
                     lstTutors.setAdapter(adapter);
+                    tutors.sort(Comparator.reverseOrder());
                     adapter.notifyDataSetChanged();
                 } else{
                     ArrayList<Tutor> filteredTutors = new ArrayList<>();
@@ -124,6 +137,7 @@ public class ListViewActivity extends AppCompatActivity {
                             filteredTutors.add(t);
                     }
                     TutorAdapter filteredAdapter = new TutorAdapter(filteredTutors,getApplicationContext());
+                    filteredTutors.sort(Comparator.reverseOrder());
                     lstTutors.setAdapter(filteredAdapter);
                     filteredAdapter.notifyDataSetChanged();
                 }
@@ -147,7 +161,6 @@ public class ListViewActivity extends AppCompatActivity {
     }
 
     public void getMyLocation() {
-        Log.d(TAG,"Here1");
         //get location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -161,10 +174,13 @@ public class ListViewActivity extends AppCompatActivity {
                 Log.d(TAG,location+"");
                 if (location != null) {
                     Log.d(TAG, "Location: " + location.getLatitude() + " " + location.getLongitude());
-                    deviceLocation = location;
+                    deviceLat = location.getLatitude();
+                    deviceLng = location.getLongitude();
                 }
                 else{
-                    Log.d(TAG,"Location was null");
+                    Log.d(TAG,"Location was null -- setting to 0");
+                    deviceLat = 0;
+                    deviceLng = 0;
                 }
             }
         });

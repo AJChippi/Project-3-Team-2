@@ -39,6 +39,7 @@ public class TutorAdapter extends BaseAdapter {
             view = LayoutInflater.from(context).inflate(R.layout.tutor_list_item_layout,viewGroup,false);
         TextView txtTutorName = view.findViewById(R.id.txtTutorName);
         TextView txtTutorSubject = view.findViewById(R.id.txtTutorSubject);
+        TextView txtDistance = view.findViewById(R.id.txtDistance);
 
         ConstraintLayout root = view.findViewById(R.id.rootTutorListItem);
         root.setOnClickListener(v->{
@@ -47,6 +48,7 @@ public class TutorAdapter extends BaseAdapter {
 
         txtTutorName.setText(tutor.name);
         txtTutorSubject.setText(tutor.subject);
+        txtDistance.setText(tutor.distance + " units away");
 
         root.setOnClickListener(v->{
             Log.d("TutorHub","Clicked tutor with id " + tutor.id);
