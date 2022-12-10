@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Bundle;
 
 import com.android.volley.Request;
@@ -66,11 +67,47 @@ public class ListViewActivity extends AppCompatActivity {
 
         String[] subjects = {"Filter","Math","Science","English","History","Computer Science","Foreign Language"};
         spnListFilter.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,subjects));
-//        spnListFilter.setSelection(0);
 
         // Get device location for distance comparisons
         getMyLocation();
 
+        tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
+        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1,20));
+        tutors.add(new Tutor("3","Example Name3","English",1,1,40));
+        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));
+
+        // Sort the list
+        tutors.sort(Comparator.reverseOrder());
+        adapter.notifyDataSetChanged();
+
+        spnListFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0){
+                    lstTutors.setAdapter(adapter);
+                    tutors.sort(Comparator.reverseOrder());
+                    adapter.notifyDataSetChanged();
+                } else{
+                    ArrayList<Tutor> filteredTutors = new ArrayList<>();
+                    for (int j = 0; j < tutors.size(); j++){
+                        Tutor t = tutors.get(j);
+                        if (adapterView.getSelectedItem().toString().equals(t.subject))
+                            filteredTutors.add(t);
+                    }
+                    TutorAdapter filteredAdapter = new TutorAdapter(filteredTutors,getApplicationContext());
+                    filteredTutors.sort(Comparator.reverseOrder());
+                    lstTutors.setAdapter(filteredAdapter);
+                    filteredAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+    }
+
+    private void fetchData(){
         // Append user ID
         String url = "https://findtutors.onrender.com/tutorList?userID=" + curUserID;
 
@@ -111,42 +148,6 @@ public class ListViewActivity extends AppCompatActivity {
         });
 
         queue.add(request);
-
-        tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
-        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1,20));
-        tutors.add(new Tutor("3","Example Name3","English",1,1,40));
-        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));
-
-        // Sort the list
-//        Collections.sort(tutors);
-        tutors.sort(Comparator.reverseOrder());
-        adapter.notifyDataSetChanged();
-
-        spnListFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 0){
-                    lstTutors.setAdapter(adapter);
-                    tutors.sort(Comparator.reverseOrder());
-                    adapter.notifyDataSetChanged();
-                } else{
-                    ArrayList<Tutor> filteredTutors = new ArrayList<>();
-                    for (int j = 0; j < tutors.size(); j++){
-                        Tutor t = tutors.get(j);
-                        if (adapterView.getSelectedItem().toString().equals(t.subject))
-                            filteredTutors.add(t);
-                    }
-                    TutorAdapter filteredAdapter = new TutorAdapter(filteredTutors,getApplicationContext());
-                    filteredTutors.sort(Comparator.reverseOrder());
-                    lstTutors.setAdapter(filteredAdapter);
-                    filteredAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -168,10 +169,9 @@ public class ListViewActivity extends AppCompatActivity {
         else
             Log.d(TAG,"Permission was granted");
 
-        flpClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+        flpClient.getCurrentLocation(LocationRequest.QUALITY_HIGH_ACCURACY,null).addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                Log.d(TAG,location+"");
                 if (location != null) {
                     Log.d(TAG, "Location: " + location.getLatitude() + " " + location.getLongitude());
                     deviceLat = location.getLatitude();
@@ -182,6 +182,7 @@ public class ListViewActivity extends AppCompatActivity {
                     deviceLat = 0;
                     deviceLng = 0;
                 }
+                fetchData();
             }
         });
     }
