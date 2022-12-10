@@ -46,11 +46,6 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
 
-        btnInfo.setOnClickListener(View -> {
-            Intent intent = new Intent(this, TutorEditInformation.class);
-            startActivity(intent);
-        });
-
         btnLogin.setOnClickListener(view -> {
             loginHandler();
         });

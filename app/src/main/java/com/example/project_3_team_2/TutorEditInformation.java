@@ -16,6 +16,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -105,7 +106,6 @@ public class TutorEditInformation extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("my_prefs", MODE_PRIVATE);
 
         btnSave.setOnClickListener(view -> {
-            Toast.makeText(this, "Saved Information", Toast.LENGTH_SHORT).show();
             //push to database
 
             String name = editName.getText().toString();
@@ -115,6 +115,24 @@ public class TutorEditInformation extends AppCompatActivity {
             String latitude = editLatitude.getText().toString();
             String bio = editBio.getText().toString();
             String subject = subjectSpinner.getSelectedItem().toString();
+
+            if( TextUtils.isEmpty(name)) {
+                editName.setError("Full name is required!");
+            }
+            else if( TextUtils.isEmpty(phoneNumber)) {
+                editPhoneNumber.setError("phone number is required!");
+            }
+            else if( TextUtils.isEmpty(email)) {
+                editEmail.setError("email is required!");
+            }
+            else if( TextUtils.isEmpty(longitude)) {
+                editLongitude.setError("longitude is required! Maybe switch to device location");
+            }
+            else if( TextUtils.isEmpty(latitude)) {
+                editLatitude.setError("latitude is required! Maybe switch to device location");
+            }
+            else if( TextUtils.isEmpty(bio)) {
+                editBio.setError("Please enter a bio!");
 
             String url = "https://findtutors.onrender.com/updateUser?userID="+sharedPreferences.getString("userID", "");
 
@@ -146,9 +164,12 @@ public class TutorEditInformation extends AppCompatActivity {
                     Log.d(TAG, "onErrorResponse: " + error);
                 }
             });
+            Toast.makeText(this, "Saved Information", Toast.LENGTH_SHORT).show();
             MyRequestQueue.add(jsonObjectRequest);
-            Intent intent = new Intent(this, GoogleMaps.class);
-            startActivity(intent);
+            }else{
+                Intent intent = new Intent(TutorEditInformation.this, GoogleMaps.class);
+                startActivity(intent);
+            }
         });
     }
 
