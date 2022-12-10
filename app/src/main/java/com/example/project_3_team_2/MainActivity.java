@@ -22,10 +22,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     Button btnSignUp;
     Button btnInfo;
+    Button btnListView;
+//    private RetrofitInterface retrofitInterface;
+    private Retrofit retrofit;
+    private String BASE_URL = "http://192.168.1.174:3000";
     RequestQueue queue;
     RadioGroup groupUserType;
 
@@ -39,12 +46,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         groupUserType = findViewById(R.id.groupUserType);
         queue = Volley.newRequestQueue(this);
 
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
+
+        btnListView = findViewById(R.id.btnListView);
+        btnListView.setOnClickListener(v->{
+            Intent intent = new Intent(this, ListViewActivity.class);
+            startActivity(intent);
+        });
 
         btnLogin.setOnClickListener(view -> {
             loginHandler();
@@ -175,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         Intent intent;
-                        if(UserType.equals("Student")) {
-                            intent = new Intent(this, GoogleMaps.class);
+                        if(UserType.equals("STUDENT")) {
+                            intent = new Intent(this, Tutor.class);
                         } else {
                             intent = new Intent(this, TutorEditInformation.class);
                         }
