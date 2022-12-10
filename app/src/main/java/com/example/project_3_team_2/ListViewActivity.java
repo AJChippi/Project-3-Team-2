@@ -43,6 +43,7 @@ public class ListViewActivity extends AppCompatActivity {
     String curUserID;
     FusedLocationProviderClient flpClient;
     final String TAG = "TutorHub";
+    Location deviceLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +65,14 @@ public class ListViewActivity extends AppCompatActivity {
         spnListFilter.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,subjects));
 //        spnListFilter.setSelection(0);
 
+        // Get device location for distance comparisons
+        getMyLocation();
+
         // Append user ID
         String url = "https://findtutors.onrender.com/tutorList?userID=" + curUserID;
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,
                 response->{
-//                        Log.d("TutorHub",response+"");
                     try{
                         Log.d(TAG,response.getJSONArray("results").getJSONArray(0)+"");
                         JSONArray jsonTutors = response.getJSONArray("results").getJSONArray(0);
@@ -87,7 +90,8 @@ public class ListViewActivity extends AppCompatActivity {
                                 longitude =0;
                             }
 
-                            tutors.add(new Tutor(userID,name,subject,latitude,longitude));
+                            Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude);
+                            tutors.add(nextTutor);
                         }
                         adapter.notifyDataSetChanged();
                     }catch(JSONException e){
@@ -99,16 +103,29 @@ public class ListViewActivity extends AppCompatActivity {
 
         queue.add(request);
 
-        tutors.add(new Tutor("1","Example Name1","MATH",1,1));
-        tutors.add(new Tutor("2","Example Name2","CS",1,1));
-        tutors.add(new Tutor("3","Example Name3","CIS",1,1));
+        tutors.add(new Tutor("1","Example Name1","Math",1,1));
+        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1));
+        tutors.add(new Tutor("3","Example Name3","English",1,1));
+        tutors.add(new Tutor("3","Example Name4","Math",1,1));
+
+        adapter.notifyDataSetChanged();
 
         spnListFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ArrayList<Tutor> filteredTutors = new ArrayList<>();
-                for (int j = 0; j < tutors.size(); j++){
-//                    if ()
+                if (i == 0){
+                    lstTutors.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                } else{
+                    ArrayList<Tutor> filteredTutors = new ArrayList<>();
+                    for (int j = 0; j < tutors.size(); j++){
+                        Tutor t = tutors.get(j);
+                        if (adapterView.getSelectedItem().toString().equals(t.subject))
+                            filteredTutors.add(t);
+                    }
+                    TutorAdapter filteredAdapter = new TutorAdapter(filteredTutors,getApplicationContext());
+                    lstTutors.setAdapter(filteredAdapter);
+                    filteredAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -130,16 +147,24 @@ public class ListViewActivity extends AppCompatActivity {
     }
 
     public void getMyLocation() {
+        Log.d(TAG,"Here1");
         //get location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION );
+        else
+            Log.d(TAG,"Permission was granted");
+
         flpClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
+                Log.d(TAG,location+"");
                 if (location != null) {
                     Log.d(TAG, "Location: " + location.getLatitude() + " " + location.getLongitude());
+                    deviceLocation = location;
+                }
+                else{
+                    Log.d(TAG,"Location was null");
                 }
             }
         });

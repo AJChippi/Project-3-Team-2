@@ -49,7 +49,7 @@ public class TutorAdapter extends BaseAdapter {
         txtTutorSubject.setText(tutor.subject);
 
         root.setOnClickListener(v->{
-//            Log.d("TutorHub","Clicked tutor with id " + tutor.id);
+            Log.d("TutorHub","Clicked tutor with id " + tutor.id);
             Intent intent = new Intent(context,TutorInformation.class);
             intent.putExtra("userID",tutor.id);
             context.startActivity(intent);
