@@ -52,7 +52,7 @@ public class TutorAdapter extends BaseAdapter {
 
         root.setOnClickListener(v->{
             Log.d("TutorHub","Clicked tutor with id " + tutor.id);
-            Intent intent = new Intent(context,TutorInformation.class);
+            Intent intent = new Intent(context,GoogleMaps.class);
             intent.putExtra("userID",tutor.id);
             context.startActivity(intent);
         });
