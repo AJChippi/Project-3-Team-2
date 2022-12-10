@@ -29,9 +29,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     Button btnSignUp;
+    Button btnListView;
     RequestQueue queue;
     RadioGroup groupUserType;
     TextView errorText;
@@ -40,16 +44,23 @@ public class MainActivity extends AppCompatActivity {
     private String userID;
     private String UserType = "STUDENT";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         groupUserType = findViewById(R.id.groupUserType);
         queue = Volley.newRequestQueue(this);
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
+
+
+        btnListView = findViewById(R.id.btnListView);
+        btnListView.setOnClickListener(v->{
+            Intent intent = new Intent(this, ListViewActivity.class);
+            startActivity(intent);
+        });
 
         btnLogin.setOnClickListener(view -> {
             loginHandler();
@@ -130,16 +141,11 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences sharedPref = getSharedPreferences("my_prefs", MainActivity.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             try {
-                Log.d("tewffe", String.valueOf(response.getJSONArray("results")));
                 JSONArray jsonArray = response.getJSONArray("results");
-                Log.d("tewffe", String.valueOf(response.getJSONArray("results").getJSONObject(0)));
-
                 JSONObject jsonStatus = jsonArray.getJSONObject(1);
                 JSONObject jsonUserID = jsonArray.getJSONObject(0);
                 String status = jsonStatus.getString("status");
                 userID = jsonUserID.getString("userID");
-                Log.d("tewffe222", String.valueOf(jsonStatus));
-
 
                 if(status.equals("200")) {
                     editor.putString("userID", userID);
@@ -147,23 +153,11 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, TutorEditInformation.class);
                     startActivity(intent);
                 }
-                else{
-                    Log.d("tewffe222", "Im Here");
-
-                }
             } catch (JSONException e) {
                 errorText.setVisibility(View.VISIBLE);
                 e.printStackTrace();
             }
-
         }, error -> Log.d("TAG", "onErrorResponse: " + error));
-
-
-
-//        // Save the userID in shared preference
-//        editor.putString("userID", userID);
-//        // Apply the changes to the preferences
-//        editor.apply();
         queue.add(jsonObjectRequest);
     }
 
@@ -220,6 +214,13 @@ public class MainActivity extends AppCompatActivity {
 //                        startActivity(intent);
                         Toast.makeText(this.getApplicationContext(),"Register Successful",Toast.LENGTH_LONG).show();
                         loginHandler();
+                        Intent intent;
+                        if(UserType.equals("STUDENT")) {
+                            intent = new Intent(this, Tutor.class);
+                        } else {
+                            intent = new Intent(this, TutorEditInformation.class);
+                        }
+                        startActivity(intent);
                     },error->{
                 Log.d("API_GET", error.toString());
             });
