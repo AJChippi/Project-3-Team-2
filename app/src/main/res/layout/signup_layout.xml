@@ -8,7 +8,7 @@
     android:backgroundTint="@color/background_blue_light">
 
     <EditText
-        android:id="@+id/etEntName"
+        android:id="@+id/etEntNewEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -16,7 +16,7 @@
         android:layout_marginEnd="32dp"
         android:backgroundTint="#B2FFFFFF"
         android:ems="10"
-        android:hint="Enter Name"
+        android:hint="Enter Email"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         android:textColor="@color/white"
@@ -38,7 +38,6 @@
         android:textColor="@color/white"
         android:textColorHint="#B2FFFFFF"
         app:layout_constraintEnd_toEndOf="@+id/etEntNewEmail"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/etEntNewEmail"
         app:layout_constraintTop_toBottomOf="@+id/etEntNewEmail" />
 
@@ -61,7 +60,7 @@
         android:id="@+id/btnNewSignUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="86dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="8dp"
         android:text="Sign Up"
         android:textColor="@color/yellow"
@@ -71,26 +70,29 @@
         app:layout_constraintEnd_toEndOf="@+id/etEntNewPassword"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/etEntNewPassword"
-        app:layout_constraintTop_toBottomOf="@+id/etEntNewPassword"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/cbTutor"
         app:rippleColor="@color/yellow"
         app:strokeColor="@color/yellow"
         app:strokeWidth="2dp" />
 
-    <EditText
-        android:id="@+id/etEntNewEmail"
-        android:layout_width="0dp"
+    <RadioGroup
+        android:id="@+id/groupUserType"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#B2FFFFFF"
-        android:ems="10"
-        android:hint="Enter Email"
-        android:inputType="textEmailAddress"
-        android:minHeight="48dp"
-        android:textColor="@color/white"
-        android:textColorHint="#B2FFFFFF"
-        app:layout_constraintEnd_toEndOf="@+id/etEntName"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/etEntName"
-        app:layout_constraintTop_toBottomOf="@+id/etEntName" />
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@+id/etEntNewPassword"
+        app:layout_constraintTop_toBottomOf="@+id/etEntNewPassword"/>
+
+    <CheckBox
+        android:id="@+id/cbTutor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="checkUserType"
+        android:buttonTint="@color/yellow"
+        android:text="Tutor"
+        android:textColor="#B2FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/etEntNewPassword"
+        app:layout_constraintTop_toBottomOf="@+id/etEntNewPassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
