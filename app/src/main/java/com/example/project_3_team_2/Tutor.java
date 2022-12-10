@@ -23,7 +23,7 @@ public class Tutor {
 
     @Override
     public boolean equals(Object o) {
-        Location.distanceBetween();
+//        Location.distanceBetween();
 
 
         if (this == o) return true;

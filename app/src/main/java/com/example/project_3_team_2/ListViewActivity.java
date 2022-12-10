@@ -1,17 +1,24 @@
 package com.example.project_3_team_2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.model.LatLng;
-import android.location.Location;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,12 +33,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ListViewActivity extends AppCompatActivity {
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
     ListView lstTutors;
     Spinner spnListFilter;
     ArrayList<Tutor> tutors;
     TutorAdapter adapter;
     RequestQueue queue;
     SharedPreferences preferences;
+    String curUserID;
+    FusedLocationProviderClient flpClient;
+    final String TAG = "TutorHub";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,19 +56,22 @@ public class ListViewActivity extends AppCompatActivity {
         tutors = new ArrayList<>();
         adapter = new TutorAdapter(tutors,this);
         lstTutors.setAdapter(adapter);
-//        preferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+
+        preferences = getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+        curUserID = preferences.getString("userID","");
 
         String[] subjects = {"Filter","Math","Science","English","History","Computer Science","Foreign Language"};
         spnListFilter.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,subjects));
 //        spnListFilter.setSelection(0);
 
-        String url = "https://findtutors.onrender.com/tutorList";
+        // Append user ID
+        String url = "https://findtutors.onrender.com/tutorList?userID=" + curUserID;
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,
                 response->{
 //                        Log.d("TutorHub",response+"");
                     try{
-                        Log.d("TutorHub",response.getJSONArray("results").getJSONArray(0)+"");
+                        Log.d(TAG,response.getJSONArray("results").getJSONArray(0)+"");
                         JSONArray jsonTutors = response.getJSONArray("results").getJSONArray(0);
                         for (int i = 0; i < jsonTutors.length()-1; i++){
                             JSONObject t = jsonTutors.getJSONObject(i);
@@ -77,10 +91,10 @@ public class ListViewActivity extends AppCompatActivity {
                         }
                         adapter.notifyDataSetChanged();
                     }catch(JSONException e){
-                        Log.d("TutorHub","error (post response): " + e.getMessage());
+                        Log.d(TAG,"error (post response): " + e.getMessage());
                     }
                 },error->{
-            Log.d("TutorHub","error: " + error.getMessage());
+            Log.d(TAG,"error: " + error.getMessage());
         });
 
         queue.add(request);
@@ -100,6 +114,33 @@ public class ListViewActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                Log.d(TAG, "Location request was granted");
+            else
+                Log.d(TAG, "Location request was denied");
+        }
+    }
+
+    public void getMyLocation() {
+        //get location
+        flpClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        flpClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    Log.d(TAG, "Location: " + location.getLatitude() + " " + location.getLongitude());
+                }
             }
         });
     }
