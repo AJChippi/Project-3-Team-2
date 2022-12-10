@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         btnInfo = findViewById(R.id.btnInfo);
 
         btnInfo.setOnClickListener(View -> {
-            Intent intent = new Intent(this, GoogleMaps.class);
+            Intent intent = new Intent(this, TutorEditInformation.class);
             startActivity(intent);
         });
 
