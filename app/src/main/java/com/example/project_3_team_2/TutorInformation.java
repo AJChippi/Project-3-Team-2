@@ -44,23 +44,44 @@ public class TutorInformation extends AppCompatActivity {
             startActivity(intent);
         });
 
-        String URL = "https://tutorproject.onrender.com/api/books";
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, URL, null, response ->  {
-                try {
-                    JSONObject jsonArray = response.getJSONObject("books");
-                    txtName.setText(jsonArray.getString("name"));
-                    } catch (JSONException jsonException) {
-                    jsonException.printStackTrace();
-                }
-        }, error -> {
-            error.printStackTrace();
-            txtName.setText("Error");
-            txtBio.setText("Error");
-            txtEmail.setText("Error");
-            txtPhoneNumber.setText("Error");
-            txtSubject.setText("Error");
+        //get the phone number and intent to the phone app
+        txtPhoneNumber.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(android.net.Uri.parse("tel:" + txtPhoneNumber.getText().toString()));
+            startActivity(intent);
         });
 
+        //get the email and intent to the email app
+        txtEmail.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{txtEmail.getText().toString()});
+            startActivity(Intent.createChooser(intent, "Send Email"));
+        });
+
+        String URL = "https://findtutors.onrender.com/tutorUser?userID=edcd4017-1fd7-46ff-8108-995fb7eff1d1\n";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, URL, null, response ->  {
+                try {
+                    //get the username of the json above
+                    JSONArray jsonArray = response.getJSONArray("results");
+                    JSONObject jsonObject = jsonArray.getJSONObject(0);
+                    String name = jsonObject.getString("name");
+                    String subject = jsonObject.getString("subject");
+                    String phoneNumber = jsonObject.getString("phoneNumber");
+                    String email = jsonObject.getString("email");
+                    String bio = jsonObject.getString("bio");
+                    //set the text of the textviews to the username
+                    txtName.setText(name);
+                    txtSubject.setText(subject);
+                    txtPhoneNumber.setText(phoneNumber);
+                    txtEmail.setText(email);
+                    txtBio.setText(bio);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }, error -> {
+                error.printStackTrace();
+            });
         queue.add(request);
     }
 }
