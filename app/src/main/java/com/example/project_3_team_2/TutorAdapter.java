@@ -1,6 +1,8 @@
 package com.example.project_3_team_2;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,10 @@ public class TutorAdapter extends BaseAdapter {
         txtTutorSubject.setText(tutor.subject);
 
         root.setOnClickListener(v->{
-            // TODO: Intent to open tutor detail page here
+//            Log.d("TutorHub","Clicked tutor with id " + tutor.id);
+            Intent intent = new Intent(context,TutorInformation.class);
+            intent.putExtra("userID",tutor.id);
+            context.startActivity(intent);
         });
         return view;
     }
