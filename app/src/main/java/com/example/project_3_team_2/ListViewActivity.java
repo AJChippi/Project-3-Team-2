@@ -65,16 +65,16 @@ public class ListViewActivity extends AppCompatActivity {
         preferences = getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
         curUserID = preferences.getString("userID","");
 
-        String[] subjects = {"Filter","Math","Science","English","History","Computer Science","Foreign Language"};
+        String[] subjects = {"Filter by subject","Math","Science","English","History","Computer Science","Foreign Language"};
         spnListFilter.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,subjects));
 
         // Get device location for distance comparisons
         getMyLocation();
 
-        tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
-        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1,20));
-        tutors.add(new Tutor("3","Example Name3","English",1,1,40));
-        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));
+//        tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
+//        tutors.add(new Tutor("2","Example Name2","Computer Science",1,1,20));
+//        tutors.add(new Tutor("3","Example Name3","English",1,1,40));
+//        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));
 
         // Sort the list
         tutors.sort(Comparator.reverseOrder());
@@ -169,7 +169,7 @@ public class ListViewActivity extends AppCompatActivity {
         else
             Log.d(TAG,"Permission was granted");
 
-        flpClient.getCurrentLocation(LocationRequest.QUALITY_HIGH_ACCURACY,null).addOnSuccessListener(this, new OnSuccessListener<Location>() {
+        flpClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
