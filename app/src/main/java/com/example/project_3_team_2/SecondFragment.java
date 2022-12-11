@@ -63,7 +63,7 @@ public class SecondFragment extends Fragment {
         btnSignUp = view.findViewById(R.id.btnCreateAccount);
 
 
-        btnListView = view.findViewById(R.id.btnListView);
+//        btnListView = view.findViewById(R.id.btnListView);
 //        btnListView.setOnClickListener(v->{
 //            Intent intent = new Intent(getActivity(), ListViewActivity.class);
 //            startActivity(intent);
@@ -132,7 +132,6 @@ public class SecondFragment extends Fragment {
 
     }
 
-
     private void postLoginUser() {
         String url = "https://findtutors.onrender.com/loginUser";
         JSONObject jsonBody = new JSONObject();
@@ -147,7 +146,7 @@ public class SecondFragment extends Fragment {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, response -> {
             Log.d("TAG", "onResponse: " + response);
             //share the userID
-            SharedPreferences sharedPref = getActivity().getSharedPreferences("my_prefs", getContext().MODE_PRIVATE);
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("my_prefs", MainActivity.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             try {
                 JSONArray jsonArray = response.getJSONArray("results");
@@ -155,11 +154,19 @@ public class SecondFragment extends Fragment {
                 JSONObject jsonUserID = jsonArray.getJSONObject(0);
                 String status = jsonStatus.getString("status");
                 userID = jsonUserID.getString("userID");
+                String userType = jsonUserID.getString("userType");
 
+                Intent intent;
                 if(status.equals("200")) {
-                    editor.putString("userID", userID);
-                    editor.apply();
-                    Intent intent = new Intent(getActivity(), TutorEditInformation.class);
+                    if(userType.equals("STUDENT")) {
+                        intent = new Intent(getActivity(), ListViewActivity.class);
+                        editor.putString("userID", userID);
+                        editor.apply();
+                    } else {
+                        intent = new Intent(getActivity(), GoogleMaps.class);
+                        editor.putString("userID", userID);
+                        editor.apply();
+                    }
                     startActivity(intent);
                 }
             } catch (JSONException e) {
@@ -182,22 +189,7 @@ public class SecondFragment extends Fragment {
         EditText editEmail = view2.findViewById(R.id.etEntNewEmail);
         EditText editPassword = view2.findViewById(R.id.etEntNewPassword);
 
-
-        CheckBox cbTutor = view2.findViewById(R.id.cbTutor);
         builder.setView(view2).show();
-
-        cbTutor.setOnClickListener(view -> {
-            if(cbTutor.isChecked()){
-                UserType = "TUTOR";
-                Log.d("ASfsfasf", UserType);
-
-            } else {
-                UserType = "STUDENT";
-                Log.d("ASfsfasf", UserType);
-            }
-        });
-
-
 
 
         btnSignup.setOnClickListener(view1 -> {
@@ -215,7 +207,7 @@ public class SecondFragment extends Fragment {
                     response->{
                         Log.d("signUp", "onResponse: " + response);
                         //share the userID
-                        SharedPreferences sharedPref = getActivity().getSharedPreferences("my_prefs", getContext().MODE_PRIVATE);
+                        SharedPreferences sharedPref = getActivity().getSharedPreferences("my_prefs", MainActivity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
                         try {
                             JSONArray jsonArray = response.getJSONArray("results");
@@ -237,21 +229,21 @@ public class SecondFragment extends Fragment {
 //                        }
 //                        startActivity(intent);
                         Toast.makeText(getActivity().getApplicationContext(),"Register Successful",Toast.LENGTH_LONG).show();
-
                         loginHandler();
-//                        Intent intent;
-//                        if(UserType.equals("STUDENT")) {
-//                            intent = new Intent(getActivity(), Tutor.class);
-//                        } else {
-//                            intent = new Intent(getActivity(), TutorEditInformation.class);
-//                        }
-//                        startActivity(intent);
+                        Intent intent;
+                        if(UserType.equals("STUDENT")) {
+                            intent = new Intent(getActivity(), ListViewActivity.class);
+                        } else {
+                            intent = new Intent(getActivity(), TutorEditInformation.class);
+                        }
+                        startActivity(intent);
                     },error->{
                 Log.d("API_GET", error.toString());
             });
             queue.add(request);
         });
     }
+
 
     @Override
     public void onDestroyView() {
