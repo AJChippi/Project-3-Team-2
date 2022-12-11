@@ -40,7 +40,7 @@ public class SecondFragment extends Fragment {
     public String username;
     public String password;
     private String userID;
-    private String UserType = "TUTOR";
+    private String UserType = "STUDENT";
     private FragmentSecondBinding binding;
     @Override
     public View onCreateView(
@@ -189,7 +189,19 @@ public class SecondFragment extends Fragment {
         EditText editEmail = view2.findViewById(R.id.etEntNewEmail);
         EditText editPassword = view2.findViewById(R.id.etEntNewPassword);
 
+        CheckBox cbTutor = view2.findViewById(R.id.cbTutor);
         builder.setView(view2).show();
+
+        cbTutor.setOnClickListener(view -> {
+            if(cbTutor.isChecked()){
+                UserType = "TUTOR";
+                Log.d("ASfsfasf", UserType);
+
+            } else {
+                UserType = "STUDENT";
+                Log.d("ASfsfasf", UserType);
+            }
+        });
 
 
         btnSignup.setOnClickListener(view1 -> {

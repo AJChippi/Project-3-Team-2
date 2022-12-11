@@ -3,6 +3,7 @@ package com.example.project_3_team_2;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.MultiAutoCompleteTextView;
@@ -40,7 +41,7 @@ public class TutorInformation extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
 
         btnGoBack.setOnClickListener(view -> {
-            Intent intent = new Intent(this, TutorEditInformation.class);
+            Intent intent = new Intent(this, GoogleMaps.class);
             startActivity(intent);
         });
 
@@ -59,29 +60,30 @@ public class TutorInformation extends AppCompatActivity {
             startActivity(Intent.createChooser(intent, "Send Email"));
         });
 
-        String URL = "https://findtutors.onrender.com/tutorUser?userID=edcd4017-1fd7-46ff-8108-995fb7eff1d1\n";
+        Intent intent = getIntent();
+        String URL = "https://findtutors.onrender.com/tutorUser?userID=" + intent.getStringExtra("userID");
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, URL, null, response ->  {
-                try {
-                    //get the username of the json above
-                    JSONArray jsonArray = response.getJSONArray("results");
-                    JSONObject jsonObject = jsonArray.getJSONObject(0);
-                    String name = jsonObject.getString("name");
-                    String subject = jsonObject.getString("subject");
-                    String phoneNumber = jsonObject.getString("phoneNumber");
-                    String email = jsonObject.getString("email");
-                    String bio = jsonObject.getString("bio");
-                    //set the text of the textviews to the username
-                    txtName.setText(name);
-                    txtSubject.setText(subject);
-                    txtPhoneNumber.setText(phoneNumber);
-                    txtEmail.setText(email);
-                    txtBio.setText(bio);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }, error -> {
-                error.printStackTrace();
-            });
+            try {
+                //get the username of the json above
+                JSONArray jsonArray = response.getJSONArray("results");
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                String name = jsonObject.getString("name");
+                String subject = jsonObject.getString("subject");
+                String phoneNumber = jsonObject.getString("phoneNumber");
+                String email = jsonObject.getString("email");
+                String bio = jsonObject.getString("bio");
+                //set the text of the textviews to the username
+                txtName.setText(name);
+                txtSubject.setText(subject);
+                txtPhoneNumber.setText(phoneNumber);
+                txtEmail.setText(email);
+                txtBio.setText(bio);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            error.printStackTrace();
+        });
         queue.add(request);
     }
 }
