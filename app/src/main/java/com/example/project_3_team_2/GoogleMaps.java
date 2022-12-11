@@ -85,9 +85,10 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
                             //Location.distanceBetween(deviceLat,deviceLng,latitude,longitude,result);
                             float distance = result[0];
                             LatLng newTutor = new LatLng(latitude, longitude);
-                            map.addMarker(new MarkerOptions()
+                            Marker m = map.addMarker(new MarkerOptions()
                                     .position(newTutor)
                                     .title(name + " Subject: " + subject));
+                            m.setTag("Name: " + name + ", Subject: " + subject);
                             //Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude,distance);
                             //tutors.add(nextTutor);
                         }
