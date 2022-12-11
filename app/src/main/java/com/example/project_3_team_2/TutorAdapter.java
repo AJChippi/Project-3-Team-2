@@ -48,7 +48,7 @@ public class TutorAdapter extends BaseAdapter {
 
         txtTutorName.setText(tutor.name);
         txtTutorSubject.setText(tutor.subject);
-        txtDistance.setText(tutor.distance + " units away");
+        txtDistance.setText("approximately "+tutor.distance + " units away");
 
         root.setOnClickListener(v->{
             Log.d("TutorHub","Clicked tutor with id " + tutor.id);

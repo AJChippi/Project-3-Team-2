@@ -106,8 +106,6 @@ public class TutorEditInformation extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("my_prefs", MODE_PRIVATE);
 
         btnSave.setOnClickListener(view -> {
-            //push to database
-
             String name = editName.getText().toString();
             String phoneNumber = editPhoneNumber.getText().toString();
             String email = editEmail.getText().toString();
@@ -115,64 +113,70 @@ public class TutorEditInformation extends AppCompatActivity {
             String latitude = editLatitude.getText().toString();
             String bio = editBio.getText().toString();
             String subject = subjectSpinner.getSelectedItem().toString();
-
-            if( TextUtils.isEmpty(name)) {
+            if(name.isEmpty()) {
                 editName.setError("Full name is required!");
             }
-            else if( TextUtils.isEmpty(phoneNumber)) {
+            else if(phoneNumber.isEmpty()) {
                 editPhoneNumber.setError("phone number is required!");
             }
-            else if( TextUtils.isEmpty(email)) {
+            else if(email.isEmpty()) {
                 editEmail.setError("email is required!");
             }
-            else if( TextUtils.isEmpty(longitude)) {
+            else if(longitude.isEmpty()) {
                 editLongitude.setError("longitude is required! Maybe switch to device location");
             }
-            else if( TextUtils.isEmpty(latitude)) {
+            else if(latitude.isEmpty()) {
                 editLatitude.setError("latitude is required! Maybe switch to device location");
             }
-            else if( TextUtils.isEmpty(bio)) {
+            else if(bio.isEmpty()) {
                 editBio.setError("Please enter a bio!");
+            }else {
 
-            String url = "https://findtutors.onrender.com/updateUser?userID="+sharedPreferences.getString("userID", "");
+                String url = "https://findtutors.onrender.com/updateUser?userID=" + sharedPreferences.getString("userID", "");
 
-            //log the shared preferences
-            Log.d("shared", "onCreate: " + sharedPreferences.getString("userID", ""));
-            JSONObject obj = new JSONObject();
-            try {
-                obj.put("userID", sharedPreferences.getString("userID", ""));
-                obj.put("name", name);
-                obj.put("phoneNumber", phoneNumber);
-                obj.put("email", email);
-                obj.put("longitude", longitude);
-                obj.put("latitude", latitude);
-                obj.put("bio", bio);
-                obj.put("subject", subject);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, obj, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    Log.d(TAG, "onResponse: " + response);
+                //log the shared preferences
+                Log.d(TAG, "onCreate: " + sharedPreferences.getString("userID", ""));
+                JSONObject obj = new JSONObject();
+                Log.d(TAG, "onCreate: " + obj);
+                try {
+                    Log.d(TAG, "SDLFJGlkSJDGLKJSEDLGD");
+                    obj.put("userID", sharedPreferences.getString("userID", ""));
+                    Log.d(TAG, "onCreate: " + sharedPreferences.getString("userID", ""));
+                    obj.put("name", name);
+                    Log.d(TAG, "onCreate: " + name);
+                    obj.put("phoneNumber", phoneNumber);
+                    Log.d(TAG, "onCreate: " + phoneNumber);
+                    obj.put("email", email);
+                    obj.put("longitude", longitude);
+                    Log.d(TAG, "onCreate: " + longitude);
+                    obj.put("latitude", latitude);
+                    Log.d(TAG, "onCreate: " + latitude);
+                    obj.put("bio", bio);
+                    obj.put("subject", subject);
+                    Log.d(TAG, "onCreate: " + subject);
+                } catch (JSONException e) {
+                    Log.d(TAG, "onCreate: " + e);
+                    e.printStackTrace();
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d(TAG, "onErrorResponse: " + error);
-                }
-            });
-            Toast.makeText(this, "Saved Information", Toast.LENGTH_SHORT).show();
-            MyRequestQueue.add(jsonObjectRequest);
-            }else{
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, obj, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: " + response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error);
+                    }
+                });
+                Toast.makeText(this, "Saved Information", Toast.LENGTH_SHORT).show();
+                MyRequestQueue.add(jsonObjectRequest);
                 Intent intent = new Intent(TutorEditInformation.this, GoogleMaps.class);
                 startActivity(intent);
             }
         });
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

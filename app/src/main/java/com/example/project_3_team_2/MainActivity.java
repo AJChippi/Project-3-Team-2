@@ -55,13 +55,6 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
 
-
-        btnListView = findViewById(R.id.btnListView);
-        btnListView.setOnClickListener(v->{
-            Intent intent = new Intent(this, ListViewActivity.class);
-            startActivity(intent);
-        });
-
         btnLogin.setOnClickListener(view -> {
             loginHandler();
         });
@@ -146,11 +139,19 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonUserID = jsonArray.getJSONObject(0);
                 String status = jsonStatus.getString("status");
                 userID = jsonUserID.getString("userID");
+                String userType = jsonUserID.getString("userType");
 
+                Intent intent;
                 if(status.equals("200")) {
-                    editor.putString("userID", userID);
-                    editor.apply();
-                    Intent intent = new Intent(MainActivity.this, TutorEditInformation.class);
+                    if(userType.equals("STUDENT")) {
+                    intent = new Intent(this, ListViewActivity.class);
+                        editor.putString("userID", userID);
+                        editor.apply();
+                    } else {
+                    intent = new Intent(this, GoogleMaps.class);
+                        editor.putString("userID", userID);
+                        editor.apply();
+                    }
                     startActivity(intent);
                 }
             } catch (JSONException e) {
@@ -216,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                         loginHandler();
                         Intent intent;
                         if(UserType.equals("STUDENT")) {
-                            intent = new Intent(this, Tutor.class);
+                            intent = new Intent(this, ListViewActivity.class);
                         } else {
                             intent = new Intent(this, TutorEditInformation.class);
                         }

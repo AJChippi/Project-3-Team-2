@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,9 +32,9 @@ import java.util.Comparator;
 
 public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    GoogleMap map;
     RequestQueue queue;
-    final String TAG = "TutorHub";
+    final String TAG = "GOOGLEMAPS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,71 +45,62 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        GoogleMap map = googleMap;
-
+        map = googleMap;
         //Set the camera to svsu
-        LatLng svsu = new LatLng(43.51301, -83.96065);
-        /*
-        map.addMarker(new MarkerOptions()
-                .position(svsu)
-                .title("Marker in Svsu"));
-                */
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(svsu,13));
-
-        String url = "https://findtutors.onrender.com/tutorList?userID=";
+        LatLng svsu = new LatLng(42.7325, -84.5555);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(svsu,7));
+        SharedPreferences sharedPreferences = getSharedPreferences("my_prefs", MODE_PRIVATE);
+        Log.d("shared", sharedPreferences.getString("userID", ""));
+        String url = "https://findtutors.onrender.com/tutorList?userID="+sharedPreferences.getString("userID", "");
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,
                 response->{
-                    try{
-                        Log.d(TAG,response.getJSONArray("results").getJSONArray(0)+"");
-                        JSONArray jsonTutors = response.getJSONArray("results").getJSONArray(0);
-                        for (int i = 0; i < jsonTutors.length()-1; i++){
-                            JSONObject t = jsonTutors.getJSONObject(i);
-                            String userID = t.getString("userID");
-                            String name = t.getString("name");
-                            String subject = t.getString("subject");
-                            double latitude, longitude;
-                            try{
-                                latitude = t.getDouble("latitude");
-                                longitude = t.getDouble("longitude");
-                            }catch (Exception e){
-                                latitude =0;
-                                longitude =0;
-                            }
+                    try {
 
-                            // Get distance to tutor
-                            float[] result = new float[1];
-                            //Location.distanceBetween(deviceLat,deviceLng,latitude,longitude,result);
-                            float distance = result[0];
-                            LatLng newTutor = new LatLng(latitude, longitude);
-                            Marker m = map.addMarker(new MarkerOptions()
-                                    .position(newTutor)
-                                    .title(name + " Subject: " + subject));
-                            m.setTag("Name: " + name + ", Subject: " + subject);
-                            //Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude,distance);
-                            //tutors.add(nextTutor);
+                        JSONArray jsonArray = response.getJSONArray("results");
+                        for(int i = 0; i < jsonArray.length()-1; i++){
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            Log.d(TAG, "onMapReady: "+jsonObject);
+                            String longitude ="";
+                            String latitude = "";
+                            try {
+                                longitude = jsonObject.getString("longitude");
+                                latitude = jsonObject.getString("latitude");
+                            }catch (Exception e){
+                                Log.d(TAG, "eororor: "+e);
+                            }
+                            Log.d(TAG,"LONGITUDE" +longitude);
+                            String name = jsonObject.getString("name");
+                            String subject = jsonObject.getString("subject");
+                            String description = jsonObject.getString("bio");
+                            String userID = jsonObject.getString("userID");
+
+                            LatLng tutorLocation = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                            Log.d(TAG, "i wanna die"+tutorLocation.toString());
+                            Marker m = map.addMarker(new MarkerOptions().position(tutorLocation).title(name).snippet("Subject: " + subject + " : Description: "+ description));
+                            m.setTag(userID);
                         }
-                        //tutors.sort(Comparator.reverseOrder());
-                        //adapter.notifyDataSetChanged();
-                    }catch(JSONException e){
-                        Log.d(TAG,"error (post response): " + e.getMessage());
+
+                        map.setOnInfoWindowClickListener(marker -> {
+                            Intent intent = new Intent(GoogleMaps.this, TutorInformation.class);
+                            intent.putExtra("userID", marker.getTag().toString());
+                            Log.d(TAG, "marker: "+marker.getTag().toString());
+                            startActivity(intent);
+                        });
+
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                        e.printStackTrace();
                     }
                 },error->{
             Log.d(TAG,"error: " + error.getMessage());
         });
 
-
-        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(@NonNull Marker marker) {
-                //show the information for the tutor
-                Intent intent = new Intent(GoogleMaps.this, TutorInformation.class);
-                startActivity(intent);
-            }
-        });
+        queue.add(request);
     }
 }
