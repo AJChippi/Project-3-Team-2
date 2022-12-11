@@ -6,11 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#001D3D"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity_old">
 
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnSign"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/background_blue_dark"
@@ -40,7 +40,7 @@
         app:cornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogin"
+        app:layout_constraintTop_toBottomOf="@+id/btnSign"
         app:rippleColor="@color/yellow"
         app:strokeColor="@color/yellow"
         app:strokeWidth="2dp" />
@@ -60,7 +60,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.7004104" />
 
     <Button
         android:id="@+id/btnListView"

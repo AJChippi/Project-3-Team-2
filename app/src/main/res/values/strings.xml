@@ -3,4 +3,14 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label"></string>
+    <string name="second_fragment_label"></string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="snackbar_text">Tutor Hub is a mobile app that connects students with tutors in their area. With Tutor Hub, students can easily book tutoring appointments with tutors who are located near them. The app uses the student\'s current location to find the nearest tutors, making it convenient for the student to find a tutor in their area. Tutor Hub also allows students to search for tutors based on their subject expertise, so they can find the perfect tutor for their needs. Tutor Hub is a valuable tool for students who are looking to improve their grades or prepare for exams. With Tutor Hub, students can easily access high-quality tutoring services and take their learning to the next level.</string>
 </resources>

@@ -16,4 +16,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="background_blue_light">#003566</color>
     <color name="background_blue_dark">#001D3D</color>
+    <color name="white_themed">#e5e5e5</color>
 </resources>

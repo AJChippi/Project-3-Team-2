@@ -21,6 +21,17 @@
         android:theme="@style/Theme.Project3Team2"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/Theme.Project3Team2.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -36,8 +47,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-            android:name=".GoogleMaps"
-            android:exported="false" />
         <activity
             android:name=".TutorEditInformation"
             android:exported="false" />
@@ -45,7 +54,7 @@
             android:name=".TutorInformation"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".MainActivity_old"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,10 +62,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-<!--        <meta-data-->
-<!--            android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="${MAPS_API_KEY}" />-->
     </application>
 
 </manifest>
