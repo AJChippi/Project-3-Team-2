@@ -17,6 +17,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import android.util.Log;
@@ -25,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import com.google.maps.android.SphericalUtil;
 
 public class ListViewActivity extends AppCompatActivity {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
@@ -41,6 +44,7 @@ public class ListViewActivity extends AppCompatActivity {
     Spinner spnListFilter;
     ArrayList<Tutor> tutors;
     TutorAdapter adapter;
+    TextView txtDistance;
     RequestQueue queue;
     SharedPreferences preferences;
     String curUserID;
@@ -56,6 +60,7 @@ public class ListViewActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
 
         lstTutors = findViewById(R.id.lstTutors);
+        txtDistance = findViewById(R.id.txtDistance);
         spnListFilter = findViewById(R.id.spnListFilter);
         tutors = new ArrayList<>();
         adapter = new TutorAdapter(tutors,this);
@@ -77,8 +82,8 @@ public class ListViewActivity extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,
                 response->{
                     try{
-                        Log.d(TAG,response.getJSONArray("results").getJSONArray(0)+"");
-                        JSONArray jsonTutors = response.getJSONArray("results").getJSONArray(0);
+                        Log.d(TAG,response.getJSONArray("results").toString());
+                        JSONArray jsonTutors = response.getJSONArray("results");
                         for (int i = 0; i < jsonTutors.length()-1; i++){
                             JSONObject t = jsonTutors.getJSONObject(i);
                             String userID = t.getString("userID");
@@ -93,12 +98,14 @@ public class ListViewActivity extends AppCompatActivity {
                                 longitude =0;
                             }
 
-                            // Get distance to tutor
-                            float[] result = new float[1];
-                            Location.distanceBetween(deviceLat,deviceLng,latitude,longitude,result);
-                            float distance = result[0];
+                            LatLng tutorLoc = new LatLng(latitude,longitude);
+                            LatLng deviceLoc = new LatLng(deviceLat,deviceLng);
 
-                            Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude,distance);
+                            double distance = SphericalUtil.computeDistanceBetween(tutorLoc, deviceLoc);
+                            double total = distance / 1609.344;
+                            //double distance = distance(latitude,longitude,deviceLat,deviceLng);
+
+                            Tutor nextTutor = new Tutor(userID,name,subject,latitude,longitude, (float) total);
                             tutors.add(nextTutor);
                         }
                         tutors.sort(Comparator.reverseOrder());
@@ -112,10 +119,10 @@ public class ListViewActivity extends AppCompatActivity {
 
         queue.add(request);
 
-        tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
+       /* tutors.add(new Tutor("1","Example Name1","Math",1,1,10));
         tutors.add(new Tutor("2","Example Name2","Computer Science",1,1,20));
         tutors.add(new Tutor("3","Example Name3","English",1,1,40));
-        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));
+        tutors.add(new Tutor("3","Example Name4","Math",1,1,30));*/
 
         // Sort the list
 //        Collections.sort(tutors);
