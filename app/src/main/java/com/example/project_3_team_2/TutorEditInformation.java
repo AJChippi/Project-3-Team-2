@@ -194,7 +194,9 @@ public class TutorEditInformation extends AppCompatActivity {
         //get location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION );
+        }else{
+            Log.d(TAG, "getMyLocation: " + "Permission was granted");
         }
         flpClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
