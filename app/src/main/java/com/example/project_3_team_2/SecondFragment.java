@@ -163,7 +163,7 @@ public class SecondFragment extends Fragment {
                         editor.putString("userID", userID);
                         editor.apply();
                     } else {
-                        intent = new Intent(getActivity(), GoogleMaps.class);
+                        intent = new Intent(getActivity(), TutorEditInformation.class);
                         editor.putString("userID", userID);
                         editor.apply();
                     }
